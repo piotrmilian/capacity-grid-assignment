@@ -18,3 +18,10 @@ left unfinished. Append as you go; a line or two per entry is right.
 - The comparison found no mismatches across the default range (1,500 cells), a 52-week range covering 500 people (26,000 cells), and a paginated date range extending into 2027. A full-year request for 500 people took around 0.3 seconds and returned roughly 820 KB of data.
 - I also checked how the endpoint handles invalid input, including malformed dates, reversed date ranges, ranges longer than 53 weeks, missing parameters, and a page size of zero. All returned a 400 response with a JSON error.
 
+## PATCH /api/people/{id}
+
+- The endpoint accepts {"weeklyHours": n}, with values between 0 and 168 inclusive. Since someone on leave may have zero working hours, I used a pointer to distinguish a missing field from an actual value of 0. Unknown fields are rejected, and the endpoint returns the updated person as stored in the database.
+- Malformed requests return 400, values outside the allowed range return 422, and unknown person IDs return 404. All errors follow the same JSON format ({error}), so the frontend can display the message directly.
+- One limitation of the current schema is that weekly_hours only stores a person's current capacity. Changing it affects every week, including past weeks. This works for future planning but doesn't accurately reflect historical capacity. I'd normally address this with a separate person_capacity(person_id, from_date, hours) table, but I left the schema unchanged as required by the assignment.
+- If two managers update the same person's capacity at the same time, the last update wins. I haven't added version checks or ETags to handle concurrent edits.
+- Tested the endpoint using curl by changing someone's weekly capacity from 40 to 36 hours and checking /api/capacity. The new capacity appeared across every week as expected, and I then restored it to 40. I also tested each error case and confirmed that the endpoint returned the expected HTTP status codes.
