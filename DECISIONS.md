@@ -23,6 +23,7 @@ Finally, Eli has 20 hours of work assigned against zero available capacity. The 
 
 ## What did the AI get wrong that you caught?
 
+I caught an issue while testing the application with a throttled network. I changed someone's hours and clicked "Load more" while the save was still in progress. Once the refresh finished, the page I'd just loaded disappeared from the grid. It turned out that the AI-generated code was taking a snapshot of the loaded pages before making the request, so any pages loaded during that time were lost when the refresh completed. I fixed it by disabling the "Load more" button while the refresh is in progress.
 
 ## What would you do differently with a week?
 
