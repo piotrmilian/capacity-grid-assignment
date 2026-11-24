@@ -1,32 +1,290 @@
 :root {
   color-scheme: light dark;
   font-family: ui-sans-serif, system-ui, sans-serif;
+
+  --over: #d93036;
+  --full: #2f9e6e;
+  --partial: #2f9e6e;
+  --line: color-mix(in srgb, currentColor 18%, transparent);
+  --muted: color-mix(in srgb, currentColor 60%, transparent);
 }
 
 body {
   margin: 0;
   padding: 2rem;
+  background: Canvas;
+  color: CanvasText;
 }
 
 h1 {
   font-size: 1.4rem;
-  margin: 0 0 0.25rem;
+  margin: 0 0 1rem;
 }
 
-.range {
-  margin: 0 0 1.5rem;
-  opacity: 0.6;
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+/* Range controls */
+
+.range-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.range-step {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.range-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.range-pick input {
+  font: inherit;
+}
+
+.range-hint,
+.range-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.range-note {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* Summary and notices */
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
 
-table {
-  border-collapse: collapse;
+.summary p {
+  margin: 0;
+}
+
+.summary-over {
+  color: var(--over);
+}
+
+.busy {
+  color: var(--muted);
+}
+
+.notice {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin: 0 0 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.notice p {
+  margin: 0;
+}
+
+.notice-error {
+  border-color: var(--over);
+  background: color-mix(in srgb, var(--over) 10%, Canvas);
+}
+
+.inline-error {
+  color: var(--over);
+  margin-left: 1rem;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.legend li {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+/* Grid */
+
+.grid-scroll {
+  overflow: auto;
+  max-height: 72vh;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: opacity 0.15s;
+}
+
+.grid-scroll.stale {
+  opacity: 0.5;
+}
+
+.grid {
+  border-collapse: separate;
+  border-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
 
-th,
-td {
-  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
-  padding: 0.5rem 0.75rem;
+.grid th,
+.grid td {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0.4rem 0.6rem;
   text-align: left;
+  white-space: nowrap;
+}
+
+.grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: Canvas;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.grid .col-person {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: Canvas;
+  font-weight: 500;
+  min-width: 14rem;
+}
+
+.grid thead .col-person {
+  z-index: 3;
+}
+
+.grid .col-hours {
+  min-width: 6.5rem;
+}
+
+.grid .col-week {
+  text-align: right;
+  min-width: 4.5rem;
+}
+
+.grid .this-week {
+  box-shadow: inset 0 -3px 0 currentColor;
+}
+
+.this-week-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.over-badge {
+  margin-left: 0.5rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--over);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.grid .cell {
+  text-align: right;
+}
+
+.cell-free {
+  color: var(--muted);
+}
+
+.cell-partial {
+  background: color-mix(in srgb, var(--partial) 12%, transparent);
+}
+
+.cell-full {
+  background: color-mix(in srgb, var(--full) 32%, transparent);
+}
+
+.cell-over {
+  background: color-mix(in srgb, var(--over) 30%, transparent);
+  font-weight: 700;
+}
+
+.cell-excess {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--over);
+}
+
+/* Weekly hours editor */
+
+.hours-button {
+  border: 1px dashed var(--line);
+  background: none;
+  color: inherit;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.hours-button:hover,
+.hours-button:focus-visible {
+  border-style: solid;
+  border-color: currentColor;
+}
+
+.hours-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+  max-width: 16rem;
+}
+
+.hours-form input {
+  width: 4.5rem;
+  font: inherit;
+}
+
+.hours-error {
+  flex-basis: 100%;
+  margin: 0.25rem 0 0;
+  color: var(--over);
+  font-size: 0.8rem;
+  white-space: normal;
+}
+
+.more {
+  margin-top: 0.75rem;
 }
